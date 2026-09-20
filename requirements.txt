@@ -1,0 +1,7 @@
+streamlit==1.64.0
+crewai==1.15.22
+crewai-tools==1.15.22
+openai==2.54.0
+python-dotenv==1.2.3
+requests==2.34.2
+pandas==3.0.6
