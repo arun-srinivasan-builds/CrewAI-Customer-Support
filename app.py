@@ -1159,7 +1159,8 @@ def run_non_agentic(query: str, workflow_search=None):
     Call 1: direct assistant answer from model knowledge.
     Tool call: Python invokes Serper directly.
     Call 2: direct model synthesis using retrieved web evidence.
-    Python then builds, validates and persists the support record.
+    Python then applies deterministic temporal/output validation, builds the
+    support record and persists it only when all release checks pass.
     """
     total_start = time.perf_counter()
 
@@ -1226,6 +1227,17 @@ the most current item supported by the evidence.
         web_answer,
     )
 
+    # Experiment 1 uses the same deterministic post-generation release gate
+    # as the CrewAI path. This adds zero OpenAI/search calls and ensures the
+    # comparison differs in orchestration style, not in safety controls.
+    output_guardrail = run_output_guardrail(
+        query=query,
+        assistant_answer=assistant_answer,
+        web_answer=web_answer,
+        final_answer=web_answer,
+        temporal_validation=temporal_validation,
+    )
+
     entry_record = (
         "CUSTOMER QUERY\n"
         f"{query.strip()}\n\n"
@@ -1241,9 +1253,38 @@ the most current item supported by the evidence.
         entry_record,
     )
 
+    # Structural validation and the Output Guardrail must BOTH pass before
+    # persistence. This mirrors the release principle used by run_agentic().
+    validation["checks"]["output_guardrail"] = output_guardrail["passed"]
+    validation["passed"] = bool(
+        validation["passed"]
+        and output_guardrail["passed"]
+    )
+
     saved_file = None
     if validation["passed"]:
         saved_file = save_agentic_record(entry_record)
+
+    # Never expose raw generated content when the post-generation gate blocks
+    # the result. Return a safe display record instead, and persistence remains
+    # false because validation["passed"] is false above.
+    if not output_guardrail["passed"]:
+        blocked_message = (
+            "The generated response was blocked by the output guardrail and "
+            "was not persisted. Review the Output Guardrail evidence below."
+        )
+        assistant_display = blocked_message
+        web_display = blocked_message
+        entry_record_display = (
+            "CUSTOMER QUERY\n"
+            f"{query.strip()}\n\n"
+            "FINAL GROUNDED ANSWER\n"
+            f"{blocked_message}"
+        )
+    else:
+        assistant_display = assistant_answer
+        web_display = web_answer
+        entry_record_display = entry_record
 
     first_usage = first_response.usage
     second_usage = second_response.usage
@@ -1253,9 +1294,9 @@ the most current item supported by the evidence.
 
     return {
         "architecture": "Non-Agentic",
-        "assistant_answer": assistant_answer,
-        "answer": web_answer,
-        "web_answer": web_answer,
+        "assistant_answer": assistant_display,
+        "answer": web_display,
+        "web_answer": web_display,
         "entry_record": entry_record_display,
         "output_guardrail": output_guardrail,
         "elapsed_time": time.perf_counter() - total_start,
@@ -4384,6 +4425,28 @@ st.markdown(
 
 
     /* =========================================================
+       EXPERIMENT PATH TITLES
+       Clear visual distinction between explicit Python and CrewAI.
+       ========================================================= */
+    .experiment-path-title{
+        margin:0 0 12px 0;
+        font-family:var(--app-font)!important;
+        font-size:21px!important;
+        line-height:1.25!important;
+        font-weight:800!important;
+        letter-spacing:-.01em!important;
+    }
+
+    .experiment-path-title.python{
+        color:#16805C!important;
+    }
+
+    .experiment-path-title.crewai{
+        color:#4F5FF5!important;
+    }
+
+
+    /* =========================================================
        LIVE PROCESSING TRACKER
        ========================================================= */
     .live-progress-shell{
@@ -6383,7 +6446,10 @@ if navigation == "🧪  Experiments" and non_agentic and agentic:
     left, right = st.columns(2, gap="large")
 
     with left:
-        st.subheader("Non-Agentic · Python Orchestration")
+        st.markdown(
+            "<div class='experiment-path-title python'>Non-Agentic · Python Orchestration</div>",
+            unsafe_allow_html=True,
+        )
         st.markdown("**Initial model answer**")
         st.write(non_agentic["assistant_answer"])
         st.markdown("**Final web-grounded answer**")
@@ -6392,7 +6458,10 @@ if navigation == "🧪  Experiments" and non_agentic and agentic:
             st.text(non_agentic["entry_record"])
 
     with right:
-        st.subheader("Agentic · CrewAI")
+        st.markdown(
+            "<div class='experiment-path-title crewai'>Agentic · CrewAI</div>",
+            unsafe_allow_html=True,
+        )
         st.markdown("**Assistant Agent**")
         st.write(agentic["assistant_answer"])
         st.markdown("**Web Search Assistant**")
