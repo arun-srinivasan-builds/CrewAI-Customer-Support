@@ -1,0 +1,37 @@
+services:
+  crewai-customer-support:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: crewai-customer-support
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    expose:
+      - "8501"
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=n8n_default"
+
+      - "traefik.http.routers.crewai-support.rule=Host(`crewai-support.srv1965124.hstgr.cloud`)"
+      - "traefik.http.routers.crewai-support.entrypoints=web,websecure"
+      - "traefik.http.routers.crewai-support.tls=true"
+      - "traefik.http.routers.crewai-support.tls.certresolver=mytlschallenge"
+
+      - "traefik.http.services.crewai-support.loadbalancer.server.port=8501"
+
+    networks:
+      - crewai-customer-support-network
+      - traefik-network
+
+networks:
+  crewai-customer-support-network:
+    name: crewai-customer-support-network
+
+  traefik-network:
+    external: true
+    name: n8n_default
