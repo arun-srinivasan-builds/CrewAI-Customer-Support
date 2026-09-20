@@ -1,0 +1,34 @@
+# Git
+.git
+.gitignore
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python environments
+venv
+.venv
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+
+# Runtime data
+answers.txt
+outputs
+logs
+
+# IDE / OS
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+*.tmp
