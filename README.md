@@ -2,7 +2,7 @@
 
 ### CrewAI Multi-Agent Buildathon · Guardrails · Evaluation · Controlled Agent Experiments
 
-A production-style customer-support application built to learn not only **how to use AI agents**, but also **when agent-based orchestration actually adds value**.
+A customer-support learning application built to explore not only **how to use AI agents**, but also **when agent-based orchestration actually adds value**.
 
 > **Build → Experiment → Learn → Harden → Deploy**
 
@@ -451,7 +451,7 @@ The agent chooses among a **bounded set of available capabilities**.
 
 # 🔧 Bounded Capabilities
 
-Experiment 2 exposes controlled simulated enterprise capabilities.
+Experiment 2 exposes controlled simulated support capabilities.
 
 The tools intentionally avoid real external side effects.
 
