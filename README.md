@@ -20,8 +20,10 @@ Python · CrewAI · OpenAI · Streamlit
 
 ## Documentation
 
-- [PROJECT GUIDE](docs/PROJECT-GUIDE.md)
+| Document | Details |
+|---|---|
+| [PROJECT GUIDE](docs/PROJECT-GUIDE.md) | Original detailed project README |
 
 ## Scope
 
-This repository documents a hands-on build and its engineering learnings. See the linked project guide for implementation details, setup, testing, and any deployment notes. Features and results should be interpreted within the documented project scope.
+This is a learning and engineering portfolio project. Consult the linked documentation for detailed implementation, evidence, limitations, setup and deployment guidance.
