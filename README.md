@@ -1,5 +1,22 @@
 # 🤖 AI Customer Support Lab
 
+<!-- portfolio-readme-overview -->
+## At a glance
+
+**Category:** Learning Lab · CrewAI orchestration  
+**Focus:** A hands-on learning build exploring sequential multi-agent support workflows, Python-versus-agent comparisons, guardrails, evaluation and observability.
+
+**Scope:** The support scenario is used to examine orchestration decisions and engineering trade-offs; it is not a claim of a deployed customer-support service.
+
+### Explore
+
+- **How it works:** See the architecture and workflow sections below.
+- **How it is checked:** See guardrails, evaluations, tests and recorded findings below.
+- **How to run it:** See the local setup and Docker instructions below, where provided.
+
+<!-- /portfolio-readme-overview -->
+
+
 ### CrewAI Multi-Agent Buildathon · Guardrails · Evaluation · Controlled Agent Experiments
 
 A customer-support learning application built to explore not only **how to use AI agents**, but also **when agent-based orchestration actually adds value**.
